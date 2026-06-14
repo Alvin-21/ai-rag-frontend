@@ -1,26 +1,299 @@
+/* globals.css
+   ─────────────────────────────────────────────────────────────────────────────
+   This file is imported once in layout.tsx and applies to every page.
+
+   THREE sections:
+   1. CSS custom properties — define your design tokens (colours, radii, etc.)
+   2. Custom utility classes & animations — things Tailwind can't do alone
+   ─────────────────────────────────────────────────────────────────────────────
+*/
+
 @import "tailwindcss";
 
+/* ─── 1. CSS Custom Properties (Design Tokens) ─────────────────────────────── */
+/*
+  :root targets the <html> element — these variables are available everywhere.
+
+  WHY use CSS variables instead of Tailwind config directly?
+  Because they're runtime-changeable. You could swap --ink and --surface for a
+  dark mode theme at the flip of a class, without rebuilding anything.
+
+  We register them here AND reference them in tailwind.config.ts so both
+  plain CSS and Tailwind utility classes can use the same values.
+*/
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Palette ── */
+  --ink: #0F172A;
+  /* near-black — primary text                     */
+  --ink-muted: #64748B;
+  /* slate-500 — secondary text, timestamps        */
+  --ink-faint: #94A3B8;
+  /* slate-400 — placeholder, disabled states      */
+
+  --surface: #F8F7F4;
+  /* warm off-white — page background              */
+  --surface-2: #FFFFFF;
+  /* pure white — cards, input backgrounds         */
+  --surface-3: #F1F0ED;
+  /* slightly darker warm — hover states           */
+
+  --user-bg: #1E293B;
+  /* slate-800 — user message bubble background    */
+  --user-text: #F8FAFC;
+  /* near-white — text inside user bubbles         */
+
+  --ai-bg: #FFFFFF;
+  /* white — AI message bubble background          */
+  --ai-border: #E2E0DB;
+  /* warm border for AI bubbles                    */
+
+  --accent: #4F6EF7;
+  /* indigo — send button, active states           */
+  --accent-dark: #3B56D9;
+  /* darker indigo — button hover                 */
+
+  --border: #E2E0DB;
+  /* default border colour                         */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.05);
+
+  /* ── Spacing & Radii ── */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  /* bubble corners                                */
+  --radius-xl: 24px;
+  /* input bar                                     */
+
+  /* ── Transitions ── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* snappy ease-out          */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ─── 2. Base Element Resets ────────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+
+  /*
+    Apply box-sizing: border-box globally.
+    This means padding and border are INCLUDED in an element's stated width/height,
+    which is almost always what you intuitively expect.
+  */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Smooth scrolling for anchor links */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    background-color: var(--surface);
+
+    /* Prevent horizontal scroll from overflowing content */
+    overflow-x: hidden;
+  }
+
+  /* Remove default list styles (we'll add them back where needed) */
+  ul,
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Make images responsive by default */
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Focus ring — visible for keyboard navigation, invisible on mouse click */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Custom scrollbar — makes the message list look polished */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ink-faint);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── 3. Component Classes ──────────────────────────────────────────────────── */
+/*
+  @layer components lets you define reusable class groups.
+  These classes CAN include Tailwind utilities — Tailwind processes them.
+  Use for patterns you apply in multiple places.
+*/
+
+@layer components {
+
+  /* Shared base for both bubble variants */
+  .chat-bubble {
+    @apply relative max-w-[78%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed;
+    /*
+      max-w-[78%] — bubbles don't stretch the full width; keeps them readable.
+      Arbitrary Tailwind values use square-bracket syntax: text-[15px]
+    */
+    word-break: break-word;
+    /* wraps long URLs and unbroken strings */
+  }
+
+  /* User bubble — dark, right-aligned */
+  .bubble-user {
+    @apply chat-bubble;
+    background-color: var(--user-bg);
+    color: var(--user-text);
+    border-bottom-right-radius: var(--radius-sm);
+    /* "speech tail" visual cue */
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* AI bubble — white/bordered, left-aligned */
+  .bubble-ai {
+    @apply chat-bubble;
+    background-color: var(--ai-bg);
+    color: var(--ink);
+    border: 1px solid var(--ai-border);
+    border-bottom-left-radius: var(--radius-sm);
+    /* "speech tail" visual cue */
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* The row that positions a bubble left (AI) or right (user) */
+  .message-row {
+    @apply flex w-full;
+  }
+
+  .message-row-user {
+    @apply message-row justify-end;
+  }
+
+  .message-row-ai {
+    @apply message-row justify-start;
+  }
+}
+
+
+/* ─── 4. Animations ─────────────────────────────────────────────────────────── */
+
+/*
+  Message appear animation
+  Each new message slides up from slightly below and fades in.
+  This gives the chat a natural, live feel without being distracting.
+*/
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-message-in {
+  animation: message-in 0.25s var(--ease-out) both;
+}
+
+
+/*
+  Typing indicator — the three animated dots shown while the AI is thinking.
+
+  HOW IT WORKS:
+  Each dot (<span>) has the same animation but a different animation-delay.
+  The delay staggers them so they bounce one after another, not all at once.
+*/
+@keyframes typing-bounce {
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/*
+  .typing-dot is applied to each of the three <span> elements in the
+  typing indicator. We use :nth-child to give each its own delay.
+*/
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--ink-faint);
+  animation: typing-bounce 1.2s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.30s;
+}
+
+
+/*
+  Input focus glow
+  When the user clicks the input, a subtle ring appears.
+  Combined with the CSS transition, it animates smoothly.
+*/
+.input-glow:focus {
+  box-shadow:
+    0 0 0 3px rgba(79, 110, 247, 0.12),
+    var(--shadow-sm);
+}
+
+
+/* ─── 5. Utility Overrides ──────────────────────────────────────────────────── */
+
+@layer utilities {
+
+  /* Hide scrollbar visually but keep it functional (used on message list) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
