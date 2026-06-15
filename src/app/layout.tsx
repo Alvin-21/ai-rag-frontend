@@ -5,7 +5,7 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
-  display: "swap",
+  display: "swap", // show fallback font while Geist loads
 });
 
 const geistMono = Geist_Mono({
