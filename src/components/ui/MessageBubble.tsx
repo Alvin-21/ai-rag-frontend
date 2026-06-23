@@ -92,7 +92,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       >
         {/* ── The Bubble itself ── */}
         <div
-          className={isUser ? "bubble-user" : "bubble-ai"}
+          className={isUser ? "chat-bubble bubble-user" : "chat-bubble bubble-ai"}
           /*
             bubble-user and bubble-ai are defined in globals.css (@layer components).
             Each sets background, text colour, border-radius, and shadow.

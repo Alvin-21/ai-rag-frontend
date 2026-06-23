@@ -165,7 +165,6 @@
 
   /* User bubble — dark, right-aligned */
   .bubble-user {
-    @apply chat-bubble;
     background-color: var(--user-bg);
     color: var(--user-text);
     border-bottom-right-radius: var(--radius-sm);
@@ -175,7 +174,6 @@
 
   /* AI bubble — white/bordered, left-aligned */
   .bubble-ai {
-    @apply chat-bubble;
     background-color: var(--ai-bg);
     color: var(--ink);
     border: 1px solid var(--ai-border);
@@ -189,12 +187,13 @@
     @apply flex w-full;
   }
 
+  /* Remember to add message-row to --user/ai if it's being used anywhere in your project */
   .message-row-user {
-    @apply message-row justify-end;
+    @apply justify-end;
   }
 
   .message-row-ai {
-    @apply message-row justify-start;
+    @apply justify-start;
   }
 }
 
