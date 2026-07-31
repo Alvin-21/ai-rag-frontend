@@ -84,7 +84,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
       {/* ── Bubble + Timestamp (stacked vertically) ── */}
       <div
-        className={`flex flex-col gap-1 ${
+        className={`flex flex-col gap-1 w-full ${
           isUser ? "items-end" : "items-start"
           // items-end   → timestamp right-aligned under user bubble
           // items-start → timestamp left-aligned under AI bubble
