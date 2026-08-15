@@ -42,6 +42,7 @@ export default function ChatWindow() {
                 id: crypto.randomUUID(),
                 role: "assistant",
                 content: data.reply,
+                sources: data.sources,
                 timestamp: new Date(),
             };
             setMessages((prev) => [...prev, aiMessage]);

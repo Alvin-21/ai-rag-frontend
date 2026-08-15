@@ -103,6 +103,16 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             If the AI responds with a list using "\n- item", it renders correctly.
           */}
           <p className="whitespace-pre-wrap">{message.content}</p>
+          {message.sources && message.sources.length > 0 && (
+            <div className="mt-2">
+              <p className="text-xs font-semibold text-gray-500">Sources:</p>
+              <ul className="text-xs text-gray-500 list-disc list-inside">
+                {message.sources.map((source, index) => (
+                  <li key={index}>{source}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* ── Timestamp ── */}
