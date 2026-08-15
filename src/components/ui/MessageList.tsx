@@ -73,7 +73,7 @@ function TypingIndicator() {
 
       {/* The bubble holding the three dots */}
       <div
-        className="bubble-ai flex items-center gap-[5px] py-[14px]"
+        className="flex items-center gap-[5px] py-[14px] rounded-full"
         /*
           py-[14px] with the flex + gap gives the dots enough breathing room
           so the bubble has a similar height to a short text message.
