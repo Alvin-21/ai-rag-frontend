@@ -1,12 +1,12 @@
 // Why a wrapper? If the backend URL changes or we add auth headers,
 // we change it in ONE place, not across every component.
 
-import { ChatRequest, ChatResponse } from "@/types/chat";
+import { ChatRequest, ChatResponse, HistoryMessage } from "@/types/chat";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function sendMessage(message: string): Promise<ChatResponse> {
-    const body: ChatRequest = { message };
+export async function sendMessage(message: string, history: HistoryMessage[]): Promise<ChatResponse> {
+    const body: ChatRequest = { message, history };
 
     const response = await fetch(`${API_URL}/chat`, {
         method: "POST",
