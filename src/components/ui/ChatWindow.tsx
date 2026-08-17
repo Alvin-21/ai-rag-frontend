@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Message } from "@/types/chat";
+import { Message, HistoryMessage } from "@/types/chat";
 import { sendMessage } from "@/app/lib/api";
 import MessageList from "./MessageList";
 import InputBar from "./InputBar";
 
+// Maximum number of history messages to send per request.
+// 10 messages = 5 full turns (user + assistant each time).
+// Increase this for longer context, or decrease to save tokens.
+const MAX_HISTORY_MESSAGES = 10;
+
 export default function ChatWindow() {
     // useState holds the list of messages. React re-renders when it changes.
     const [messages, setMessages] = useState<Message[]>([]);
+    const [conversationHistory, setConversationHistory] = useState<HistoryMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -33,9 +39,16 @@ export default function ChatWindow() {
         setIsLoading(true);
         setError(null);
 
+        // ── Step 2: Trim history before sending ──
+        //
+        // Slice from the end to keep only the most recent turns.
+        // .slice(-10) returns the last 10 elements of any array.
+        // If the array has fewer than 10 elements, it returns everything.
+        const historyToSend = conversationHistory.slice(-MAX_HISTORY_MESSAGES);
+
         try {
             // Call the backend
-            const data = await sendMessage(text);
+            const data = await sendMessage(text.trim(), historyToSend);
 
             // Add the AI's reply
             const aiMessage: Message = {
@@ -46,6 +59,18 @@ export default function ChatWindow() {
                 timestamp: new Date(),
             };
             setMessages((prev) => [...prev, aiMessage]);
+
+            // We add the user message AND the AI reply together as a pair.
+            // This keeps history in alternating user/assistant order, which
+            // is required by the Groq API.
+            //
+            // IMPORTANT: we use text.trim() (not userMessage.content) and
+            // data.reply directly — these are the clean strings without UI metadata.
+            setConversationHistory((prev) => [
+                ...prev,
+                { role: "user", content: text.trim() },   // what the user said
+                { role: "assistant", content: data.reply },     // what the AI said
+            ]);
         } catch (err) {
             setError("Something went wrong. Please try again.");
         } finally {
