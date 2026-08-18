@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { Message } from "@/types/chat";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 // Props = the inputs a component receives from its parent.
@@ -102,7 +103,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             whitespace-pre-wrap: preserves newlines in the message text.
             If the AI responds with a list using "\n- item", it renders correctly.
           */}
-          <p className="whitespace-pre-wrap">{message.content}</p>
+          <MarkdownRenderer content={message.content} />
           {message.sources && message.sources.length > 0 && (
             <div className="mt-2">
               <p className="text-xs font-semibold text-gray-500">Sources:</p>
