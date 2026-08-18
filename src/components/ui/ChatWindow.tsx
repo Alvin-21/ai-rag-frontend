@@ -83,7 +83,7 @@ export default function ChatWindow() {
             {/* Header */}
             <header className="p-4 border-b bg-white">
                 <h1 className="text-xl font-semibold text-gray-800">AI Assistant</h1>
-                <p className="text-sm text-gray-500">Powered by Groq · llama-3.1-8b-instant</p>
+                <p className="text-sm text-gray-500">Powered by Groq · openai/gpt-oss-20b</p>
             </header>
 
             {/* Message area — scrollable */}

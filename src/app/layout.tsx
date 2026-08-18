@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AI Assistant",
   description:
-    "An AI-powered support chatbot built with Next.js, FastAPI, and llama-3.1-8b-instant.",
+    "An AI-powered support chatbot built with Next.js, FastAPI, and openai/gpt-oss-20b.",
 };
 
 export default function RootLayout({
