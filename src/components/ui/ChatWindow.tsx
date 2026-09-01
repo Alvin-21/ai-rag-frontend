@@ -5,6 +5,7 @@ import { Message, HistoryMessage } from "@/types/chat";
 import { sendMessage } from "@/app/lib/api";
 import MessageList from "./MessageList";
 import InputBar from "./InputBar";
+import { AppError } from "@/types/error";
 
 // Maximum number of history messages to send per request.
 // 10 messages = 5 full turns (user + assistant each time).
@@ -72,7 +73,11 @@ export default function ChatWindow() {
                 { role: "assistant", content: data.reply },     // what the AI said
             ]);
         } catch (err) {
-            setError("Something went wrong. Please try again.");
+            if (err instanceof AppError) {
+                setError(err.message);
+            } else {
+                setError("Something went wrong. Please try again.");
+            }
         } finally {
             setIsLoading(false);
         }

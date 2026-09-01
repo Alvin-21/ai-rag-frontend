@@ -2,6 +2,7 @@
 // we change it in ONE place, not across every component.
 
 import { ChatRequest, ChatResponse, HistoryMessage } from "@/types/chat";
+import { AppError } from "@/types/error";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -18,7 +19,13 @@ export async function sendMessage(message: string, history: HistoryMessage[]): P
 
     // If the server returned an error status, throw so the UI can handle it
     if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
+      const errorData = await response.json();
+
+      if (response.status === 429) {
+        throw new AppError(errorData.message, 429);
+      } else {
+        throw new AppError("Something went wrong. Please try again.", 500);
+      }
     }
 
     return response.json() as Promise<ChatResponse>;
