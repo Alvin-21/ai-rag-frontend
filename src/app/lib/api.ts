@@ -21,10 +21,13 @@ export async function sendMessage(message: string, history: HistoryMessage[]): P
     if (!response.ok) {
       const errorData = await response.json();
 
-      if (response.status === 429) {
-        throw new AppError(errorData.message, 429);
-      } else {
-        throw new AppError("Something went wrong. Please try again.", 500);
+      switch (response.status) {
+        case 422:
+          throw new AppError(errorData["detail"][0]["ctx"]["error"].detail, 422);
+        case 429:
+          throw new AppError(errorData.message, 429);
+        default:
+          throw new AppError("Something went wrong. Please try again.", 500);
       }
     }
 
